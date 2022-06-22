@@ -1,3 +1,5 @@
+.gitignore
+MANIFEST.MF
 Constants.java
 # Default ignored files
 /shelf/

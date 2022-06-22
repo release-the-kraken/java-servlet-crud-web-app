@@ -23,6 +23,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 public class DBClient {
 	private static CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
@@ -61,7 +62,14 @@ public class DBClient {
 		}
 	}
 	public static void deleteFromDB(String id) {
-		
+		try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
+			MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
+			MongoCollection<Person> collection = database.getCollection(COLLECTION_NAME, Person.class);
+			//collection.deleteOne(Filters.eq(id));
+			System.out.println("Item " + id + " deleted succesfully");
+			} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
 }

@@ -1,15 +1,17 @@
-//documet.onload = function(){
-	const id = (id) => document.getElementById(id);
-	const classNames = (className) => document.getElementsByClassName(className);	
+window.onload = function(){
+
+	const id = id => document.getElementById(id);
+	const classes = className => document.getElementById(className);
 	
-	const subtitle = id("subtitle");	
-	
+	const subtitle = id("subtitle");
+	//var deleteButtons = classes("delete-buttons");
+	subtitle.innerHTML = "bingo";
 	function addPageElements(object){
 		const dCContainer = id("display-cards-container");
 		const displayCard = document.createElement("div");
 		displayCard.setAttribute("class", "display-card");
-	//	//displayCard.setAttribute("value", object._id.$oid);
-//		////displayCard.innerHTML = object._id.$oid;
+		displayCard.setAttribute("data-id", object._id.$oid);
+		displayCard.innerHTML = object._id.$oid;
 		const firstName = document.createElement("h3");
 		firstName.innerText = object.firstName;
 		const lastName = document.createElement("h3");
@@ -24,29 +26,32 @@
 		displayCard.appendChild(lastName);
 		displayCard.appendChild(updateButton);
 		displayCard.appendChild(deleteButton);
-		
+		deleteButton.addEventListener("click", deleteElement);
 	}
-
-	function getContent(){
+	
+	(async function getContent(){
 		subtitle.innerHTML = "Fetching from database.";
-		/*try{
-      		let response = await fetch("http://localhost:3300/mywebapp/my-web-app");
-      		let responseObject = await response.json();
-      		responseObject.map(obj => addPageElements(obj));
-      		subtitle.innerHTML = "Data fetched successfully";
-    	}catch(err){
-    	  subtitle.innerText = "No content";
-      	  console.log(err);
-    	}*/
-    	fetch("http://localhost:3300/mywebapp/my-web-app",{method: "GET"})
-    	.then(function(response){
-			let respObj = response.json();
-			respObj.map(obj => addPageElements(obj));
-      		subtitle.innerHTML = "Data fetched successfully";
-		}).catch(function(err){
-			subtitle.innerText = "No content";
-      	  	console.log(err);
-		})
-  	}
-  	getContent();
-//}
+		try{
+	   		let response = await fetch("http://localhost:3300/mywebapp/my-web-app");
+	   		let responseObject = await response.json();
+	   		responseObject.map(obj => addPageElements(obj));
+	   		subtitle.innerHTML = "Data fetched successfully";
+	   	}catch(err){
+	   	  subtitle.innerText = "No content";
+	   	  console.log(err);
+	   	}
+	})();
+	async function deleteElement(event){
+		let elementId = Object.values(event.target.parentNode.dataset);
+		subtitle.innerHTML = elementId;
+		try{
+			await fetch(`http://localhost:3300/mywebapp/my-web-app?id=${elementId}`, {method: "DELETE"});
+		}catch(err){
+			subtitle.innerText = "Failed to delete";
+	   	  	console.log(err);
+		}
+	}
+	
+	//deleteButtons.addEventListener("click", deleteElement);
+		
+}
