@@ -11,7 +11,7 @@ window.onload = function(){
 		const displayCard = document.createElement("div");
 		displayCard.setAttribute("class", "display-card");
 		displayCard.setAttribute("data-id", object._id.$oid);
-		displayCard.innerHTML = object._id.$oid;
+		//displayCard.innerHTML = object._id.$oid;
 		const firstName = document.createElement("h3");
 		firstName.innerText = object.firstName;
 		const lastName = document.createElement("h3");
@@ -42,8 +42,9 @@ window.onload = function(){
 	   	}
 	})();
 	async function deleteElement(event){
-		let elementId = Object.values(event.target.parentNode.dataset);
-		subtitle.innerHTML = elementId;
+		const parentElement = event.target.parentNode;
+		let elementId = Object.values(parentElement.dataset);
+		parentElement.parentNode.removeChild(parentElement);
 		try{
 			await fetch(`http://localhost:3300/mywebapp/my-web-app?id=${elementId}`, {method: "DELETE"});
 		}catch(err){
@@ -51,7 +52,5 @@ window.onload = function(){
 	   	  	console.log(err);
 		}
 	}
-	
-	//deleteButtons.addEventListener("click", deleteElement);
 		
 }

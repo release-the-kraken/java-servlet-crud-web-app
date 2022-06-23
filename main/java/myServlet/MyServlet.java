@@ -12,6 +12,10 @@ import model.Person;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.apache.jasper.compiler.NewlineReductionServletWriter;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+
 @WebServlet("/my-web-app")
 public class MyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;

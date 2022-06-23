@@ -11,10 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.jasper.compiler.NewlineReductionServletWriter;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.bson.types.ObjectId;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -65,7 +67,7 @@ public class DBClient {
 		try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
 			MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
 			MongoCollection<Person> collection = database.getCollection(COLLECTION_NAME, Person.class);
-			//collection.deleteOne(Filters.eq(id));
+			collection.deleteOne(new Document("_id", new ObjectId(id)));
 			System.out.println("Item " + id + " deleted succesfully");
 			} catch (Exception e) {
 			System.out.println(e.getMessage());
