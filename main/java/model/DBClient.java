@@ -73,5 +73,7 @@ public class DBClient {
 			System.out.println(e.getMessage());
 		}
 	}
-
+	public static void putToBD(String firstName, String lastName) {
+		
+	}
 }

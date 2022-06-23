@@ -35,5 +35,7 @@ public class MyServlet extends HttpServlet {
 		String idString = request.getParameter("id");
 		DBClient.deleteFromDB(idString);
 	}
-
+	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+	}
 }
