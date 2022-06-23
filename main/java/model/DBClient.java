@@ -47,7 +47,7 @@ public class DBClient {
 			System.out.println("Successfully obtained data");
 			System.out.println(output);
 			writer.write(output);	
-			 
+			writer.close();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -67,8 +67,8 @@ public class DBClient {
 		try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
 			MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
 			MongoCollection<Person> collection = database.getCollection(COLLECTION_NAME, Person.class);
-			collection.deleteOne(new Document("_id", new ObjectId(id)));
-			System.out.println("Item " + id + " deleted succesfully");
+			collection.deleteOne(Filters.eq("_id", new ObjectId(id)));
+			System.out.println("Item with id: " + id + " deleted succesfully");
 			} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
