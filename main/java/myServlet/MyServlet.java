@@ -29,7 +29,8 @@ public class MyServlet extends HttpServlet {
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
 		DBClient.postToDB(firstName, lastName);
-	}
+		response.sendRedirect("/mywebapp");
+		}
 
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String idString = request.getParameter("id");
