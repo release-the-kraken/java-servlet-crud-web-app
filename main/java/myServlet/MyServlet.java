@@ -6,8 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.DBClient;
-import model.ListOfItems;
-import model.Person;
+import model.Book;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,16 +20,22 @@ public class MyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter writer = response.getWriter();
-		DBClient.getFromDB(writer);
+		String id = request.getParameter("id");
+		if(id != null) { 
+			DBClient.getSingleEntryFromDB(writer, id);
+		}else {
+			DBClient.getAllEntriesFromDB(writer);
+		}
 	}
 
-	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String firstName = request.getParameter("firstName");
-		String lastName = request.getParameter("lastName");
-		DBClient.postToDB(firstName, lastName);
+		String title = request.getParameter("title");
+		String author = request.getParameter("author");
+		String genre = request.getParameter("genre");
+		String description = request.getParameter("description");
+		DBClient.postToDB(title, author, genre, description);
 		response.sendRedirect("/mywebapp");
-		}
+	}
 
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String idString = request.getParameter("id");

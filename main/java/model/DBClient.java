@@ -35,7 +35,7 @@ public class DBClient {
 	private static MongoClientSettings clientSettings = MongoClientSettings.builder()
 			.applyConnectionString(connectionString).codecRegistry(pojoCodecRegistry).build();
 
-	public static void getFromDB(PrintWriter writer) {
+	public static void getAllEntriesFromDB(PrintWriter writer) {
 		try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
 			MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
 			MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
@@ -44,7 +44,7 @@ public class DBClient {
 				.into(new ArrayList<>())
 				.stream()
 				.collect(Collectors.joining(", ", "[", "]"));
-			System.out.println("Successfully obtained data");
+			System.out.println("Successfully obtained data:");
 			System.out.println(output);
 			writer.write(output);	
 			writer.close();
@@ -52,13 +52,30 @@ public class DBClient {
 			System.out.println(e.getMessage());
 		}
 	}
+	public static void getSingleEntryFromDB(PrintWriter writer, String id) {
+		try (MongoClient mongoClient = MongoClients.create(clientSettings)){
+			MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
+			MongoCollection<Document> collection = database.getCollection(COLLECTION_NAME);
+			FindIterable<Document> documents = collection.find(eq("_id", new ObjectId(id)));
+			String output = documents.first().toJson();
+			System.out.println("Succesfully obtained entry:");
+			System.out.println(output);
+			writer.write(output);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
 
-	public static void postToDB(String firstName, String lastName) {
+	public static void postToDB(String title, String author, String genre, String description) {
 		try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
 			MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-			MongoCollection<Person> collection = database.getCollection(COLLECTION_NAME, Person.class);
-			Person person = new Person(firstName, lastName);
-			collection.insertOne(person);
+			MongoCollection<Book> collection = database.getCollection(COLLECTION_NAME, Book.class);
+			Book book = new Book();
+			book.setTitle(title);
+			book.setAuthor(author);
+			book.setGenre(genre);
+			book.setDescription(description);
+			collection.insertOne(book);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -66,7 +83,7 @@ public class DBClient {
 	public static void deleteFromDB(String id) {
 		try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
 			MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-			MongoCollection<Person> collection = database.getCollection(COLLECTION_NAME, Person.class);
+			MongoCollection<Book> collection = database.getCollection(COLLECTION_NAME, Book.class);
 			collection.deleteOne(Filters.eq("_id", new ObjectId(id)));
 			System.out.println("Item with id: " + id + " deleted succesfully");
 			} catch (Exception e) {

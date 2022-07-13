@@ -1,8 +1,7 @@
 const id = id => document.getElementById(id);
 const create = elementTag => document.createElement(elementTag);
 
-function hideForm(event){
-	event.preventDefault();
+function hideForm(){
 	id("form-container").style.visibility = "hidden";
 } 
 
@@ -13,8 +12,9 @@ const createAddForm = () =>{
 		const formContainer = create("div");
 		formContainer.setAttribute("id", "form-container");
 		const closeButton = create("span");		
-		closeButton.setAttribute("id", "form-close-button");
-		closeButton.innerText = "x";
+		closeButton.setAttribute("id", "close-button");
+		closeButton.setAttribute("class", "material-symbols-outlined");
+		closeButton.innerText = "cancel";
 		closeButton.addEventListener("click", hideForm)
 		formContainer.appendChild(closeButton);
 		const numberOfInputs = 4;
@@ -22,6 +22,8 @@ const createAddForm = () =>{
 		formMain.setAttribute("id", "form-main");
 		const form = create("form");
 		form.setAttribute("id", "book-add-form");
+		form.setAttribute("action", "my-web-app");
+		form.setAttribute("method", "post");
 		formMain.appendChild(form);
 
 		for(let i = 0; i < numberOfInputs; i++){
@@ -40,15 +42,17 @@ const createAddForm = () =>{
 				currInput = create("input");				
 				currInput.setAttribute("type", "text");
 				currInput.setAttribute("class", "input-box");
+				currLabel.setAttribute("id", `form-${labels[i].toLowerCase()}-input`);
 			}else{
 				currInput = create("textarea");
 			}
-			
+			//id("form-title-input").setAttribute("required", "true");
 			currInput.setAttribute("id", `{labels[i].toLowerCase()}-input`);
 			currInput.setAttribute("name", labels[i].toLowerCase());
 			inputContainer.appendChild(currInput);
 			form.appendChild(inputContainer);
 		}
+		id("")
 		const submitBtnContainer = create("div");
 		submitBtnContainer.setAttribute("id", "submit-div"); 
 		const submitButton = create("input");

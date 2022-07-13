@@ -7,41 +7,100 @@ window.onload = function(){
 	const classes = className => document.getElementById(className);
 	const create = elementTag => document.createElement(elementTag);
 	let isUpdateButtonPressed = false;
-	const subtitle = id("subtitle");	
-	
-	createAddForm();
+	const tabContainer = create("div");
+	tabContainer.setAttribute("id", "tab-container");
+	const infoContainer = create("div");
+	infoContainer.setAttribute("id", "info-container");
+
+	id("app").appendChild(tabContainer);
+	id("app").appendChild(infoContainer);	
 	
 	function addPageElements(object){
-		const dCContainer = id("display-cards-container");
-		const displayCard = document.createElement("div");
+		const displayCard = create("div");
 		displayCard.setAttribute("class", "display-card");
 		displayCard.setAttribute("data-id", object._id.$oid);
 		//displayCard.innerHTML = object._id.$oid;
-		const firstName = document.createElement("h3");
-		firstName.innerText = object.firstName;
-		const lastName = document.createElement("h3");
-		lastName.innerText = object.lastName;
-		const deleteButton = document.createElement("button");
-		deleteButton.innerText = "Delete";
-		deleteButton.setAttribute("class", "delete-buttons");
-		const updateButton = document.createElement("button");
-		updateButton.setAttribute("class", "update-buttons");
-		updateButton.innerText = "Update";
-		dCContainer.appendChild(displayCard);
-		displayCard.appendChild(firstName);
-		displayCard.appendChild(lastName);
-		displayCard.appendChild(updateButton);
+		const title = create("h3");
+		title.innerText = object.title;
+		const author = create("h5");
+		author.innerText = object.author;
+		const deleteButton = create("span");
+		deleteButton.setAttribute("class", "delete-buttons material-symbols-outlined");
+		deleteButton.innerText = "delete";
+		tabContainer.appendChild(displayCard);
+		displayCard.appendChild(title);
+		displayCard.appendChild(author);
 		displayCard.appendChild(deleteButton);
 		deleteButton.addEventListener("click", deleteElement);
-		updateButton.addEventListener("click", createUpdateForm);
+		displayCard.addEventListener("click", getSingleEntryFromDB);
+		
+	}
+	function createAddButton(){
+		const addButton = create("span");
+		addButton.setAttribute("id", "add-button");
+		addButton.setAttribute("class", "material-symbols-outlined");
+		addButton.innerText = "add";
+		addButton.addEventListener("click", createAddForm);
+		id("tab-container").appendChild(addButton);
 	}
 	
-	(async function getContent(){
+	function createBookInfoDisplay(object){
+		const textTypes = ["h1", "h2", "h3", "p"];
+		const objectProperties = [object.title, object.author, object.genre, object.description];
+		const infoContainer = id("info-container");
+		if(infoContainer.firstChild){
+			infoContainer.removeChild(infoContainer.firstChild);
+		}
+		const bookInfoDisplay = create("div");
+		bookInfoDisplay.setAttribute("id", "book-info-display");
+		const docFrag = document.createDocumentFragment();
+		(function createTextElement(){
+			for(let i = 0; i < textTypes.length; i++){
+				const container = create("div");
+				container.setAttribute("class", "book-info");
+				const element = create(textTypes[i]);
+				element.innerText = objectProperties[i];
+				const updateButton = create("span");
+				updateButton.setAttribute("class", "material-symbols-outlined");
+				updateButton.innerText = "edit";
+				updateButton.addEventListener("click", updateEntry);
+				container.appendChild(element);
+				container.appendChild(updateButton);
+				docFrag.appendChild(container);
+			}
+		})();
+		
+		bookInfoDisplay.appendChild(docFrag);
+		infoContainer.appendChild(bookInfoDisplay);
+	}
+	async function updateEntry(event){
+		const parentElement = event.target.parentNode;
+		const bookInfoText = parentElement.firstChild;
+		bookInfoText.contentEditable = true;
+		bookInfoText.focus();
+	}
+	async function getSingleEntryFromDB(event){
+		let elementId = null;
+		if(event.target.className != "display-card" && event.target.className != "delete-buttons"){
+			elementId = Object.values(event.target.parentNode.dataset);
+		}else{
+			elementId = Object.values(event.target.dataset);
+		}
+		try{
+	   		let response = await fetch(`http://localhost:3300/mywebapp/my-web-app?id=${elementId}`);
+	   		let responseObject = await response.json();
+	   		createBookInfoDisplay(responseObject);
+	   	}catch(err){
+		 	console.log(err);
+	   	}
+	}
+	(async function getAllEntriesFromDB(){
 		//subtitle.innerHTML = "Fetching from database.";
 		try{
 	   		let response = await fetch("http://localhost:3300/mywebapp/my-web-app");
-	   		let responseObject = await response.json();
+	   		let responseObject = await response.json();	   		
 	   		responseObject.map(obj => addPageElements(obj));
+	   		createAddButton();
 	   		//subtitle.innerHTML = "Data fetched successfully";
 	   	}catch(err){
 	   	  //subtitle.innerText = "No content";
@@ -49,43 +108,7 @@ window.onload = function(){
 	   	}
 	})();
 /*	deleteElement
-	}*/
-	function createUpdateForm(event){
-		const docFragment = document.createDocumentFragment();
-		const parentElement = event.target.parentNode;
-		const updateForm = document.createElement("form");
-		//updateForm.setAttribute("action", "my-web-app");
-		//updateForm.setAttribute("method", "put");
-		parentElement.appendChild(updateForm);
-		const firstNameInputLabel = document.createElement("label");
-		firstNameInputLabel.setAttribute("for", "firstName")
-		firstNameInputLabel.innerText = "Update first name ";
-		const firstNameInput = document.createElement("input");
-		firstNameInput.setAttribute("type", "text");
-		firstNameInput.setAttribute("name", "firstName");
-		firstNameInput.setAttribute("id", "first-name");
-		firstNameInput.setAttribute("class", "first-name");
-		firstNameInput.setAttribute("placeholder", "first-name");
-		const lastNameInputLabel = document.createElement("label");
-		lastNameInputLabel.innerText = "Update last name ";
-		const lastNameInput = document.createElement("input");
-		lastNameInput.setAttribute("name", "lastName");
-		lastNameInput.setAttribute("id", "last-name");
-		const submitButton = document.createElement("input");
-		submitButton.setAttribute("type", "submit");
-		submitButton.setAttribute("value", "update");
-		docFragment.appendChild(firstNameInputLabel);
-		docFragment.appendChild(firstNameInput);
-		docFragment.appendChild(lastNameInputLabel);
-		docFragment.appendChild(lastNameInput);
-		docFragment.appendChild(submitButton);
-		updateForm.appendChild(docFragment);
-		parentElement.style.width = "20%";
-		submitButton.addEventListener("click", updateElement);
-		isUpdateButtonPressed = true;	
-			
-	}
-		
+	}*/	
 		
 		
 	async function updateElement(event){
